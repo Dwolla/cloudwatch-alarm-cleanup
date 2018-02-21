@@ -1,0 +1,33 @@
+service: ${env:SERVICE_NAME}
+
+resources:
+  Description: Lambda to remove CloudWatch Alarms when an EC2 instance is terminated
+  Outputs:
+    RemoveCloudWatchAlarmsArn:
+      Description: RemoveCloudWatchAlarms ARN
+      Value:
+        'Fn::GetAtt': [ RemoveCloudWatchAlarmsLambdaFunction, Arn ]
+      Export:
+        Name: '${self:service}:${self:provider.stage}:RemoveCloudWatchAlarmsArn'
+
+provider:
+  name: aws
+  stage: production
+  runtime: nodejs6.10
+  region: us-west-2
+  timeout: 30
+  memorySize: 128
+  iamRoleStatements:
+    -  Effect: "Allow"
+       Action:
+         - "cloudwatch:DescribeAlarms"
+         - "cloudwatch:DeleteAlarms"
+       Resource:
+         - "*"
+
+package:
+  artifact: ${env:ARTIFACT_PATH}
+
+functions:
+  RemoveCloudWatchAlarms:
+    handler: index.removeCloudWatchAlarms
