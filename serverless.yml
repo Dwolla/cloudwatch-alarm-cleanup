@@ -31,3 +31,10 @@ package:
 functions:
   RemoveCloudWatchAlarms:
     handler: index.removeCloudWatchAlarms
+    events:
+      - cloudwatchEvent:
+          event:
+            source:
+              - "aws.autoscaling"
+            detail-type:
+              - "EC2 Instance Terminate Successful"
