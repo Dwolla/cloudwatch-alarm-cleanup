@@ -1,7 +1,6 @@
 lazy val `cloudwatch-alarm-cleanup` = project.in(file("."))
   .enablePlugins(ScalaJSPlugin)
   .settings(
-    scalaVersion := "2.12.4",
     resolvers ++= Seq(
       Resolver.jcenterRepo,
       Resolver.sonatypeRepo("releases"),
