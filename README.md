@@ -1,5 +1,8 @@
 # CloudWatch Alarm Cleanup
 
+[![Travis](https://img.shields.io/travis/Dwolla/cloudwatch-alarm-cleanup.svg?style=flat-square)](https://travis-ci.org/Dwolla/cloudwatch-alarm-cleanup)
+[![license](https://img.shields.io/github/license/Dwolla/cloudwatch-alarm-cleanup.svg?style=flat-square)]()
+
 A [Serverless](https://serverless.com) application for [AWS Lambda](https://aws.amazon.com/lambda/) that will accept [`autoscaling:EC2_INSTANCE_TERMINATING` lifecycle events](https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroupLifecycle.html), identify the EC2 instance ID of the terminating instance, and remove any CloudWatch alarms with an `InstanceId` dimension matching the terminating instance ID.
 
 The application is written in [Scala.JS](https://www.scala-js.org) to be deployed to the Lambda Node runtime.

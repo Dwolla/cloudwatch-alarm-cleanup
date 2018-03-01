@@ -4,6 +4,7 @@ import aws.AWS.CloudWatch
 import aws.cloudwatch._
 import aws.lambda._
 import cats.effect._
+import com.dwolla.aws.cloudwatch.AlarmsForInstance.byInstanceId
 import com.dwolla.aws.cloudwatch._
 import com.dwolla.aws.lambda.ScheduledEventStream._
 import fs2._
@@ -36,10 +37,10 @@ object Handler {
     val stream = for {
       client ← cloudWatchClientStream.observe(stdOut("client: "))
       event ← input.observe(stdOut("input: "))
-      ec2Instance ← terminatingEc2InstanceId[F](event).observe(stdOut("removing CloudWatch alarms for terminating instance "))
+      ec2Instance ← terminatingEc2InstanceId(event).observe(stdOut("removing CloudWatch alarms for terminating instance "))
       alarms = AllCloudWatchAlarms[F](client)
         .observe(stdOut("alarm "))
-        .filter(AlarmsForInstance.byInstanceId(ec2Instance))
+        .filter(byInstanceId(ec2Instance))
       deletion ← alarms.through(RemoveAlarms[F](client))
     } yield deletion
 
