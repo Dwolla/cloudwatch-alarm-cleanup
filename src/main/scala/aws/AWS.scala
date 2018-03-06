@@ -23,3 +23,11 @@ object AWS extends Object {
   }
 
 }
+
+@native
+@JSImport("aws-xray-sdk-core", JSImport.Namespace)
+object AWSXRay extends Object {
+
+  def captureAWSClient[T <: Object](aws: T): T = native
+
+}
