@@ -1,6 +1,7 @@
 package com.dwolla.aws.lambda
 
-import aws.AWS.CloudWatch
+import aws.AWS
+import aws.AWSXRay._
 import aws.cloudwatch._
 import aws.lambda._
 import cats.effect._
@@ -32,7 +33,8 @@ object Handler {
 
   def handleScheduledEvents[F[_]](input: Stream[F, ScheduledEvent])
                                  (implicit F: Effect[F]): Stream[F, DeleteAlarmsOutput] = {
-    val cloudWatchClientStream = Stream.bracket(F.delay(new CloudWatch()))(Stream.emit(_), _ ⇒ F.unit)
+    val aws = captureAWSClient(new AWS.CloudWatch())
+    val cloudWatchClientStream = Stream.bracket(F.delay(aws))(Stream.emit(_), _ ⇒ F.unit)
 
     val stream = for {
       client ← cloudWatchClientStream.observe(stdOut("client: "))

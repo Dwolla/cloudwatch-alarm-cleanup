@@ -17,20 +17,30 @@ provider:
   region: us-west-2
   timeout: 30
   memorySize: 1024
+  tracing: true
   iamRoleStatements:
-    -  Effect: "Allow"
-       Action:
-         - "cloudwatch:DescribeAlarms"
-         - "cloudwatch:DeleteAlarms"
-       Resource:
-         - "*"
+    - Effect: "Allow"
+      Action:
+        - "cloudwatch:DescribeAlarms"
+        - "cloudwatch:DeleteAlarms"
+      Resource:
+        - "*"
+    - Effect: "Allow" # xray permissions (required)
+      Action:
+        - "xray:PutTraceSegments"
+        - "xray:PutTelemetryRecords"
+      Resource:
+        - "*"
+
+plugins:
+  - serverless-plugin-tracing
 
 package:
   artifact: ${env:ARTIFACT_PATH}
 
 functions:
   RemoveCloudWatchAlarms:
-    handler: index.removeCloudWatchAlarms
+    handler: ${env:BUNDLE_NAME}.removeCloudWatchAlarms
     events:
       - cloudwatchEvent:
           event:
