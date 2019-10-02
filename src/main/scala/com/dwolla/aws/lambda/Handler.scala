@@ -1,16 +1,13 @@
 package com.dwolla.aws.lambda
 
-import aws.AWS
-import aws.AWSXRay._
 import aws.cloudwatch._
 import aws.lambda._
 import cats.effect._
 import com.dwolla.aws.cloudwatch.AlarmsForInstance.byInstanceId
 import com.dwolla.aws.cloudwatch._
+import com.dwolla.aws.ec2.InstanceId
 import com.dwolla.aws.lambda.ScheduledEventStream._
 import fs2._
-import RemoveAlarms._
-import cats.Applicative
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
@@ -23,7 +20,7 @@ object Handler {
   val handler: ScheduledHandler = (event, _, callback: LambdaCallback[Unit]) => {
     Stream.emit(event)
       .covary[IO]
-      .through(handleScheduledEvents[IO])
+      .through(HandleScheduledEvents[IO])
       .compile
       .drain
       .unsafeRunAsync {
@@ -32,25 +29,29 @@ object Handler {
       }
   }
 
-  def handleScheduledEvents[F[_] : ConcurrentEffect](input: Stream[F, ScheduledEvent]): Stream[F, DeleteAlarmsOutput] = {
-    val acquireCloudWatchClient = Sync[F].delay(captureAWSClient(new AWS.CloudWatch()))
-    val cloudWatchClientStream = Stream.bracket(acquireCloudWatchClient)(_ => Applicative[F].unit)
+}
 
-    val stream = for {
-      client <- cloudWatchClientStream.observe(stdOut("client: "))
-      event <- input.observe(stdOut("input: "))
-      ec2Instance <- terminatingEc2InstanceId(event).covary[F].observe(stdOut("removing CloudWatch alarms for terminating instance "))
-      alarms = AllCloudWatchAlarms[F](client)
-        .observe(stdOut("alarm "))
-        .filter(byInstanceId(ec2Instance))
-      deletion <- alarms.through(RemoveAlarms[F](client))
+object HandleScheduledEvents {
+  def apply[F[_] : ConcurrentEffect]: Pipe[F, ScheduledEvent, DeleteAlarmsOutput] = input =>
+    for {
+      ec2Instance <- input.through(scheduledEventToEc2InstanceId)
+      implicit0(alg: CloudWatchAlg[F]) <- Stream.resource(CloudWatchAlg.resource[F])
+      deletion <- alarmsForInstanceId(ec2Instance).through(alg.removeAlarms).observe(stdOut("deletion result: "))
     } yield deletion
 
-    stream
-      .observe(stdOut("observe "))
-  }
+  private def scheduledEventToEc2InstanceId[F[_] : Concurrent]: Pipe[F, ScheduledEvent, InstanceId] = input =>
+    for {
+      event <- input.observe(stdOut("input: "))
+      ec2Instance <- terminatingEc2InstanceId(event).covary[F].observe(stdOut("removing CloudWatch alarms for terminating instance "))
+    } yield ec2Instance
 
-  def stdOut[F[_] : Sync, I](prefix: String = "")(implicit ev: I => Any): Pipe[F, I, Unit] =
+  private def alarmsForInstanceId[F[_] : Concurrent : CloudWatchAlg](ec2Instance: InstanceId) =
+    CloudWatchAlg[F]
+      .listAllCloudWatchAlarms()
+      .filter(byInstanceId(ec2Instance))
+      .observe(stdOut("alarm "))
+
+  private def stdOut[F[_] : Sync, I](prefix: String)(implicit ev: I => Any): Pipe[F, I, Unit] =
     _.map(JSON.stringify(_)).through(_.evalMap(str => Sync[F].delay(Console.out.println(prefix + str))))
 
 }

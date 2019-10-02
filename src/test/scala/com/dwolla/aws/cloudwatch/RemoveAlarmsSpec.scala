@@ -1,8 +1,10 @@
 package com.dwolla.aws.cloudwatch
 
-import aws.cloudwatch.{AlarmName, DeleteAlarmsInput, DeleteAlarmsOutput, MetricAlarm}
-import cats.effect.IO
-import com.dwolla.aws.cloudwatch.RemoveAlarms._
+import aws.AWS.CloudWatch
+import aws._
+import aws.cloudwatch._
+import cats.effect._
+import com.dwolla.aws.cloudwatch.CloudWatchAlg.CloudWatchAlgImpl
 import com.dwolla.aws.cloudwatch.RemoveAlarmsSpec._
 import com.dwolla.aws.cloudwatch.TestHelpers._
 import com.dwolla.testutils.StreamSpec
@@ -18,9 +20,7 @@ class RemoveAlarmsSpec extends StreamSpec with Matchers {
   it should "set up a mock client" inIO {
     val cutoff = 100
 
-    val client: DeleteAlarms[IO] = input => IO {
-      js.Dynamic.literal("input" -> input).asInstanceOf[DeleteAlarmsOutput]
-    }
+    val client: CloudWatch = new FakeCloudWatch
 
     val input: Stream[IO, MetricAlarm] = Stream.emits(0 until (cutoff + 1)).map { i =>
       val metricAlarm = uninitializedMetricAlarm()
@@ -28,10 +28,9 @@ class RemoveAlarmsSpec extends StreamSpec with Matchers {
       metricAlarm
     }
 
-    val compiled = RemoveAlarms[IO](client)(input)
-      .compile
+    val output: IO[List[DeleteAlarmsOutput]] = new CloudWatchAlgImpl[IO](client).removeAlarms(input).compile.toList
 
-    compiled.toList.map { l =>
+    output.map { l =>
       alarms(l.headOption) should be((0 until cutoff).map(toAlarmName).toList)
       alarms(l.tail.headOption) should equal((cutoff until (cutoff + 1)).map(toAlarmName).toList)
     }
@@ -51,4 +50,18 @@ class RemoveAlarmsSpec extends StreamSpec with Matchers {
 
 object RemoveAlarmsSpec {
   val toAlarmName: Int => AlarmName = i => alarmName(s"alarm-$i")
+}
+
+class FakeCloudWatch extends CloudWatch {
+  def metricAlarm(x: AlarmName): MetricAlarm = {
+    val metricAlarm = uninitializedMetricAlarm()
+    metricAlarm.AlarmName = x
+    metricAlarm
+  }
+
+  override def describeAlarms(params: DescribeAlarmsInput, callback: Callback[DescribeAlarmsOutput]): Unit =
+    callback(null, js.Dynamic.literal("MetricAlarms" -> params.AlarmNames.map(metricAlarm)).asInstanceOf[DescribeAlarmsOutput])
+
+  override def deleteAlarms(params: DeleteAlarmsInput, callback: Callback[DeleteAlarmsOutput]): Unit =
+    callback(null, js.Dynamic.literal("input" -> params).asInstanceOf[DeleteAlarmsOutput])
 }

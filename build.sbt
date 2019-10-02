@@ -1,6 +1,7 @@
 lazy val `cloudwatch-alarm-cleanup` = project.in(file("."))
   .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
+    addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
     resolvers ++= Seq(
       Resolver.jcenterRepo,
       Resolver.sonatypeRepo("releases"),
