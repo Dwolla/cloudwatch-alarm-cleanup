@@ -18,11 +18,11 @@ class RemoveAlarmsSpec extends StreamSpec with Matchers {
   it should "set up a mock client" inIO {
     val cutoff = 100
 
-    val client: DeleteAlarms[IO] = input ⇒ IO {
-      js.Dynamic.literal("input" → input).asInstanceOf[DeleteAlarmsOutput]
+    val client: DeleteAlarms[IO] = input => IO {
+      js.Dynamic.literal("input" -> input).asInstanceOf[DeleteAlarmsOutput]
     }
 
-    val input: Stream[IO, MetricAlarm] = Stream.emits(0 until (cutoff + 1)).map { i ⇒
+    val input: Stream[IO, MetricAlarm] = Stream.emits(0 until (cutoff + 1)).map { i =>
       val metricAlarm = uninitializedMetricAlarm()
       metricAlarm.AlarmName = toAlarmName(i)
       metricAlarm
@@ -31,9 +31,9 @@ class RemoveAlarmsSpec extends StreamSpec with Matchers {
     val compiled = RemoveAlarms[IO](client)(input)
       .compile
 
-    compiled.toList.map { l ⇒
-      alarms(l.tail.headOption) should equal((cutoff until (cutoff + 1)).map(toAlarmName))
-      alarms(l.headOption) should be((0 until cutoff).map(toAlarmName))
+    compiled.toList.map { l =>
+      alarms(l.headOption) should be((0 until cutoff).map(toAlarmName).toList)
+      alarms(l.tail.headOption) should equal((cutoff until (cutoff + 1)).map(toAlarmName).toList)
     }
   }
 
@@ -50,5 +50,5 @@ class RemoveAlarmsSpec extends StreamSpec with Matchers {
 }
 
 object RemoveAlarmsSpec {
-  val toAlarmName: Int ⇒ AlarmName = i ⇒ alarmName(s"alarm-$i")
+  val toAlarmName: Int => AlarmName = i => alarmName(s"alarm-$i")
 }

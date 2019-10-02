@@ -3,9 +3,7 @@ package com.dwolla.fs2utils
 import cats.Applicative
 import cats.data.Kleisli
 import cats.implicits._
-import fs2.{Segment, Stream}
-
-import scala.language.higherKinds
+import fs2._
 
 object Pagination {
   private sealed trait PageIndicator[S]
@@ -13,22 +11,22 @@ object Pagination {
   private case class NextPage[S](token: S) extends PageIndicator[S]
   private case class NoMorePages[S]() extends PageIndicator[S]
 
-  def offsetUnfoldSegmentEval[F[_], S, O](f: Option[S] ⇒ F[(Segment[O, Unit], Option[S])])
+  def offsetUnfoldChunkEval[F[_], S, O](f: Option[S] => F[(Chunk[O], Option[S])])
                                          (implicit F: Applicative[F]): Stream[F, O] = {
-    def fetchPage(maybeNextPageToken: Option[S]): F[Option[(Segment[O, Unit], PageIndicator[S])]] = {
+    def fetchPage(maybeNextPageToken: Option[S]): F[Option[(Chunk[O], PageIndicator[S])]] = {
       f(maybeNextPageToken).map {
-        case (segment, Some(nextToken)) ⇒ Option((segment, NextPage(nextToken)))
-        case (segment, None) ⇒ Option((segment, NoMorePages[S]()))
+        case (chunk, Some(nextToken)) => Option((chunk, NextPage(nextToken)))
+        case (chunk, None) => Option((chunk, NoMorePages[S]()))
       }
     }
 
-    Stream.unfoldSegmentEval[F, PageIndicator[S], O](FirstPage[S]()) {
-      case FirstPage() ⇒ fetchPage(None)
-      case NextPage(token) ⇒ fetchPage(Some(token))
-      case NoMorePages() ⇒ F.pure(None)
+    Stream.unfoldChunkEval[F, PageIndicator[S], O](FirstPage[S]()) {
+      case FirstPage() => fetchPage(None)
+      case NextPage(token) => fetchPage(Some(token))
+      case NoMorePages() => F.pure(None)
     }
   }
 
-  def offsetUnfoldEval[F[_] : Applicative, S, O](f: Option[S] ⇒ F[(O, Option[S])]): Stream[F, O] =
-    offsetUnfoldSegmentEval(Kleisli(f).map(tuple ⇒ (Segment(tuple._1), tuple._2)).run)
+  def offsetUnfoldEval[F[_] : Applicative, S, O](f: Option[S] => F[(O, Option[S])]): Stream[F, O] =
+    offsetUnfoldChunkEval(Kleisli(f).map(tuple => (Chunk(tuple._1), tuple._2)).run)
 }

@@ -14,14 +14,14 @@ class AlarmsForInstanceSpec extends FlatSpec with Matchers {
 
   it should "return true if the metric's dimensions include one that matches the instance ID" in {
     val metricAlarm = uninitializedMetricAlarm()
-    metricAlarm.Dimensions = List("InstanceId" → instanceId).map(tupleToDimension).toJSArray
+    metricAlarm.Dimensions = List("InstanceId" -> instanceId).map(tupleToDimension).toJSArray
 
     AlarmsForInstance.byInstanceId(instanceId)(metricAlarm) should be(true)
   }
 
   it should "return false if the metric's dimensions include an InstanceId dimension but it doesn't match the instance ID" in {
     val metricAlarm = uninitializedMetricAlarm()
-    metricAlarm.Dimensions = List("InstanceId" → "i-1234567").map(tupleToDimension).toJSArray
+    metricAlarm.Dimensions = List("InstanceId" -> "i-1234567").map(tupleToDimension).toJSArray
 
     AlarmsForInstance.byInstanceId(instanceId)(metricAlarm) should be(false)
   }

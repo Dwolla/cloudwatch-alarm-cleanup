@@ -2,31 +2,27 @@ package com.dwolla.aws.cloudwatch
 
 import aws.AWS.CloudWatch
 import aws.cloudwatch._
-import cats.effect.Effect
+import cats.effect._
 import com.dwolla.awssdk.ExecuteVia._
 import fs2._
-
-import scala.concurrent.ExecutionContext
-import scala.language.{higherKinds, implicitConversions}
 
 object RemoveAlarms {
   val deleteAlarmsParallelismFactor = 5
   val maximumNumberOfAlarmsToDeleteAtOnce = 100
 
-  def apply[F[_] : Effect](deleteAlarms: DeleteAlarms[F])
-                          (alarms: Stream[F, MetricAlarm])
-                          (implicit ec: ExecutionContext): Stream[F, DeleteAlarmsOutput] = {
+  def apply[F[_] : ConcurrentEffect](deleteAlarms: DeleteAlarms[F])
+                                    (alarms: Stream[F, MetricAlarm]): Stream[F, DeleteAlarmsOutput] = {
     alarms
       .map(_.AlarmName)
-      .segmentN(maximumNumberOfAlarmsToDeleteAtOnce, allowFewer = true)
-      .map(segment ⇒ segment.force.toList)
-      .map(segment ⇒ DeleteAlarmsInput(segment: _*))
+      .chunkN(maximumNumberOfAlarmsToDeleteAtOnce, allowFewer = true)
+      .map(_.toList)
+      .map(DeleteAlarmsInput(_: _*))
       .map(deleteAlarms)
       .map(Stream.eval)
-      .join(deleteAlarmsParallelismFactor)
+      .parJoin(deleteAlarmsParallelismFactor)
   }
 
-  type DeleteAlarms[F[_]] = DeleteAlarmsInput ⇒ F[DeleteAlarmsOutput]
+  type DeleteAlarms[F[_]] = DeleteAlarmsInput => F[DeleteAlarmsOutput]
 
   implicit def toDeleteAlarms[F[_] : Effect](client: CloudWatch): DeleteAlarms[F] = _.executeVia[F](client.deleteAlarms)
 }

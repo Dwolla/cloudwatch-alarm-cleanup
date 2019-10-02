@@ -9,7 +9,7 @@ import scala.scalajs.js
 object TestHelpers {
   def uninitializedMetricAlarm(): MetricAlarm = js.Dynamic.literal().asInstanceOf[MetricAlarm]
   def tupleToDimension(tuple: (String, String)): Dimension =
-    js.Dynamic.literal("Name" → tuple._1, "Value" → tuple._2).asInstanceOf[Dimension]
+    js.Dynamic.literal("Name" -> tuple._1, "Value" -> tuple._2).asInstanceOf[Dimension]
   def instanceId(s: String): InstanceId = tag[InstanceIdTag][String](s)
   def alarmName(s: String): AlarmName = tag[AlarmNameTag][String](s)
 

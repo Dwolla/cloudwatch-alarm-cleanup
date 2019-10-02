@@ -8,20 +8,20 @@ lazy val `cloudwatch-alarm-cleanup` = project.in(file("."))
     ),
     libraryDependencies ++= {
       Seq(
-        "co.fs2" %%% "fs2-core" % "0.10.1",
+        "co.fs2" %%% "fs2-core" % "2.0.1",
         "com.chuusai" %%% "shapeless" % "2.3.3",
       ) ++
       Seq(
-        "org.scalatest" %%% "scalatest" % "3.0.4",
-        "com.dwolla" %%% "testutils-scalatest-fs2" % "1.8.0",
+        "org.scalatest" %%% "scalatest" % "3.0.8",
+        "com.dwolla" %%% "testutils-scalatest-fs2" % "2.0.0-M3",
       ).map(_ % Test)
     },
     (npmDependencies in Compile) ++= Seq(
-      "aws-xray-sdk-core" → "1.2.0",
+      "aws-xray-sdk-core" -> "1.2.0",
     ),
     (npmDevDependencies in Compile) ++= Seq(
-      "serverless" → "^1.26.1",
-      "serverless-plugin-tracing" → "^2.0.0",
+      "serverless" -> "^1.26.1",
+      "serverless-plugin-tracing" -> "^2.0.0",
     ),
     jsDependencies ++= Seq(
       "org.webjars.npm" % "aws-sdk" % "2.200.0" / "aws-sdk.js" minified "aws-sdk.min.js" commonJSName "AWS",
@@ -30,6 +30,10 @@ lazy val `cloudwatch-alarm-cleanup` = project.in(file("."))
     webpackResources := webpackResources.value +++ PathFinder(baseDirectory.value / "serverless.yml"),
     scalaJSModuleKind := ModuleKind.CommonJSModule,
     scalacOptions += "-P:scalajs:sjsDefinedByDefault",
+    scalacOptions --= Seq(
+      "-Wdead-code",
+      "-Wunused:params",
+    )
   )
 
 lazy val serverlessDeployCommand = settingKey[String]("serverless command to deploy the application")
@@ -49,9 +53,9 @@ deploy := Def.task {
   Process(
     s"$nodeModulesBin/$cmd",
     Option(webpackWorkingFolder),
-    "SERVICE_NAME" → normalizedName.value,
-    "ARTIFACT_PATH" → artifactPath.value.toString,
-    "BUNDLE_NAME" → bundleName,
+    "SERVICE_NAME" -> normalizedName.value,
+    "ARTIFACT_PATH" -> artifactPath.value.toString,
+    "BUNDLE_NAME" -> bundleName,
   ).!
 }.value
 
@@ -59,7 +63,7 @@ artifactPath := target.value / "awslambda.zip"
 
 Keys.`package` in Compile := {
   val zipFile = artifactPath.value
-  val inputs = applicationBundles.value.map(f ⇒ f → f.name)
+  val inputs = applicationBundles.value.map(f => f -> f.name)
 
   IO.zip(inputs, zipFile)
 
