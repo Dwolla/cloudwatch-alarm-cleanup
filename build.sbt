@@ -10,10 +10,11 @@ lazy val `cloudwatch-alarm-cleanup` = project.in(file("."))
       Seq(
         "co.fs2" %%% "fs2-core" % "0.10.1",
         "com.chuusai" %%% "shapeless" % "2.3.3",
-        "org.scalatest" %%% "scalatest" % "3.0.4" % Test,
-        "org.scalamock" %%% "scalamock" % "4.1.0" % Test,
-        "com.dwolla" %%% "testutils-scalatest-fs2" % "1.8.0" % Test,
-      )
+      ) ++
+      Seq(
+        "org.scalatest" %%% "scalatest" % "3.0.4",
+        "com.dwolla" %%% "testutils-scalatest-fs2" % "1.8.0",
+      ).map(_ % Test)
     },
     (npmDependencies in Compile) ++= Seq(
       "aws-xray-sdk-core" → "1.2.0",

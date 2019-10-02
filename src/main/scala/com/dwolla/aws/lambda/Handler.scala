@@ -9,6 +9,7 @@ import com.dwolla.aws.cloudwatch.AlarmsForInstance.byInstanceId
 import com.dwolla.aws.cloudwatch._
 import com.dwolla.aws.lambda.ScheduledEventStream._
 import fs2._
+import RemoveAlarms._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.{higherKinds, postfixOps}

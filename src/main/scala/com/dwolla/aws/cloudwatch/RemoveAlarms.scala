@@ -13,7 +13,7 @@ object RemoveAlarms {
   val deleteAlarmsParallelismFactor = 5
   val maximumNumberOfAlarmsToDeleteAtOnce = 100
 
-  def apply[F[_] : Effect](client: CloudWatch)
+  def apply[F[_] : Effect](deleteAlarms: DeleteAlarms[F])
                           (alarms: Stream[F, MetricAlarm])
                           (implicit ec: ExecutionContext): Stream[F, DeleteAlarmsOutput] = {
     alarms
@@ -21,9 +21,12 @@ object RemoveAlarms {
       .segmentN(maximumNumberOfAlarmsToDeleteAtOnce, allowFewer = true)
       .map(segment ⇒ segment.force.toList)
       .map(segment ⇒ DeleteAlarmsInput(segment: _*))
-      .map(_.executeVia[F](client.deleteAlarms))
+      .map(deleteAlarms)
       .map(Stream.eval)
       .join(deleteAlarmsParallelismFactor)
   }
 
+  type DeleteAlarms[F[_]] = DeleteAlarmsInput ⇒ F[DeleteAlarmsOutput]
+
+  implicit def toDeleteAlarms[F[_] : Effect](client: CloudWatch): DeleteAlarms[F] = _.executeVia[F](client.deleteAlarms)
 }

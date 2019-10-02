@@ -2,6 +2,9 @@
 
 package aws.cloudwatch
 
+import aws.Callback
+
+import scala.scalajs.js
 import scala.scalajs.js._
 import scala.scalajs.js.JSConverters._
 
