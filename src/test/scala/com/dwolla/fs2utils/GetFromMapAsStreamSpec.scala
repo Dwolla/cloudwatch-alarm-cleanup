@@ -7,7 +7,7 @@ class GetFromMapAsStreamSpec extends FlatSpec with Matchers {
   behavior of "GetFromMapAsStream"
 
   it should "emit a single value found in the map" in {
-    val value = Map("key" → "value").getAsStream("key")
+    val value = Map("key" -> "value").getAsStream("key")
 
     value.toList should be(List("value"))
   }

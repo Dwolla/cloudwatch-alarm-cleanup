@@ -12,10 +12,10 @@ class ScheduledEventStreamSpec extends StreamSpec {
   behavior of "ScheduledEventStream"
 
   it should "accept a ScheduledEvent and return its EC2 Instance ID" inStream {
-    val event = js.Dynamic.literal("detail" → Dictionary("EC2InstanceId" → "i-abcdefg")).asInstanceOf[ScheduledEvent]
+    val event = js.Dynamic.literal("detail" -> Dictionary("EC2InstanceId" -> "i-abcdefg")).asInstanceOf[ScheduledEvent]
 
     for {
-      instanceId ← terminatingEc2InstanceId(event)
+      instanceId <- terminatingEc2InstanceId(event)
     } yield instanceId should be("i-abcdefg")
   }
 

@@ -6,8 +6,6 @@ import fs2._
 import com.dwolla.fs2utils._
 import shapeless.tag
 
-import scala.language.higherKinds
-
 object ScheduledEventStream {
 
   private def scheduledEventDetails(input: ScheduledEvent): Stream[Pure, Map[String, AnyRef]] =
@@ -18,9 +16,9 @@ object ScheduledEventStream {
 
   def terminatingEc2InstanceId(input: ScheduledEvent): Stream[Pure, InstanceId] =
     for {
-      scheduledEvent ← Stream.emit(input)
-      details ← scheduledEventDetails(scheduledEvent)
-      ec2InstanceId ← ec2InstanceIdStream(details)
+      scheduledEvent <- Stream.emit(input)
+      details <- scheduledEventDetails(scheduledEvent)
+      ec2InstanceId <- ec2InstanceIdStream(details)
     } yield ec2InstanceId
 
 }

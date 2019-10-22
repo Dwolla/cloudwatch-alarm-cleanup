@@ -4,30 +4,30 @@ package aws
 
 import aws.cloudwatch._
 
+import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
-import scala.scalajs.js._
 
-@native
+@js.native
 @JSImport("aws-sdk", JSImport.Namespace)
-object AWS extends Object {
+object AWS extends js.Object {
 
-  @native
-  class CloudWatch extends Object {
+  @js.native
+  class CloudWatch extends js.Object {
 
     def describeAlarms(params: DescribeAlarmsInput,
-                       callback: Callback[DescribeAlarmsOutput]): Unit = native
+                       callback: Callback[DescribeAlarmsOutput]): Unit = js.native
 
     def deleteAlarms(params: DeleteAlarmsInput,
-                     callback: Callback[DeleteAlarmsOutput]): Unit = native
+                     callback: Callback[DeleteAlarmsOutput]): Unit = js.native
 
   }
 
 }
 
-@native
+@js.native
 @JSImport("aws-xray-sdk-core", JSImport.Namespace)
-object AWSXRay extends Object {
+object AWSXRay extends js.Object {
 
-  def captureAWSClient[T <: Object](aws: T): T = native
+  def captureAWSClient[T <: Object](aws: T): T = js.native
 
 }
