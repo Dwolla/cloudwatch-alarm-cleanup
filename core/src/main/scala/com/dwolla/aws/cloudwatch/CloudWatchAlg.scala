@@ -4,6 +4,7 @@ import aws.AWS
 import aws.AWS.CloudWatch
 import aws.AWSXRay.captureAWSClient
 import aws.cloudwatch._
+import com.dwolla.awssdk.cloudwatch._
 import cats._
 import cats.effect._
 import com.dwolla.awssdk.ExecuteVia._
