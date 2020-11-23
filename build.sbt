@@ -27,6 +27,7 @@ lazy val `cloudwatch-alarm-cleanup` = project.in(file("."))
     jsDependencies ++= Seq(
       "org.webjars.npm" % "aws-sdk" % "2.200.0" / "aws-sdk.js" minified "aws-sdk.min.js" commonJSName "AWS",
     ).map(_ % Test),
+    crossScalaVersions := List("2.13.1"),
     webpackConfigFile := Some(baseDirectory.value / "webpack-config.js"),
     webpackResources := webpackResources.value +++ PathFinder(baseDirectory.value / "serverless.yml"),
     scalaJSModuleKind := ModuleKind.CommonJSModule,
