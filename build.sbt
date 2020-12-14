@@ -27,14 +27,15 @@ lazy val `cloudwatch-alarm-cleanup` = project.in(file("."))
     jsDependencies ++= Seq(
       "org.webjars.npm" % "aws-sdk" % "2.200.0" / "aws-sdk.js" minified "aws-sdk.min.js" commonJSName "AWS",
     ).map(_ % Test),
-    crossScalaVersions := List("2.13.1"),
+    scalaVersion := "2.13.4",
     webpackConfigFile := Some(baseDirectory.value / "webpack-config.js"),
     webpackResources := webpackResources.value +++ PathFinder(baseDirectory.value / "serverless.yml"),
     scalaJSModuleKind := ModuleKind.CommonJSModule,
     scalacOptions += "-P:scalajs:sjsDefinedByDefault",
     scalacOptions --= Seq(
       "-Wdead-code",
-      "-Wunused:params",
+      "-Wunused:explicits",
+      "-Wunused:params"
     )
   )
 
@@ -43,7 +44,7 @@ serverlessDeployCommand := "serverless deploy --verbose"
 
 lazy val deploy = taskKey[Int]("deploy to AWS")
 deploy := Def.task {
-  (Compile / Keys.`package`).value
+  val _ = (Compile / Keys.`package`).value
 
   import scala.sys.process._
 
@@ -67,7 +68,7 @@ Keys.`package` in Compile := {
   val zipFile = artifactPath.value
   val inputs = applicationBundles.value.map(f => f -> f.name)
 
-  IO.zip(inputs, zipFile)
+  IO.zip(inputs, zipFile, None)
 
   zipFile
 }
