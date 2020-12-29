@@ -9,7 +9,7 @@ import com.dwolla.aws.cloudwatch.RemoveAlarmsSpec._
 import com.dwolla.aws.cloudwatch.TestHelpers._
 import com.dwolla.testutils.StreamSpec
 import fs2._
-import org.scalatest._
+import org.scalatest.matchers.should.Matchers
 
 import scala.scalajs.js
 

@@ -1,4 +1,5 @@
 lazy val `cloudwatch-alarm-cleanup` = project.in(file("."))
+  .enablePlugins(JSDependenciesPlugin)
   .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
     addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
@@ -9,12 +10,12 @@ lazy val `cloudwatch-alarm-cleanup` = project.in(file("."))
     ),
     libraryDependencies ++= {
       Seq(
-        "co.fs2" %%% "fs2-core" % "2.0.1",
+        "co.fs2" %%% "fs2-core" % "2.4.6",
         "com.chuusai" %%% "shapeless" % "2.3.3",
       ) ++
       Seq(
-        "org.scalatest" %%% "scalatest" % "3.0.8",
-        "com.dwolla" %%% "testutils-scalatest-fs2" % "2.0.0-M3",
+        "org.scalatest" %%% "scalatest" % "3.2.0",
+        "com.dwolla" %%% "testutils-scalatest-fs2" % "2.0.0-M6",
       ).map(_ % Test)
     },
     (npmDependencies in Compile) ++= Seq(
@@ -25,13 +26,12 @@ lazy val `cloudwatch-alarm-cleanup` = project.in(file("."))
       "serverless-plugin-tracing" -> "^2.0.0",
     ),
     jsDependencies ++= Seq(
-      "org.webjars.npm" % "aws-sdk" % "2.200.0" / "aws-sdk.js" minified "aws-sdk.min.js" commonJSName "AWS",
+      "org.webjars.npm" % "aws-sdk" % "2.630.0" / "aws-sdk.js" minified "aws-sdk.min.js" commonJSName "AWS",
     ).map(_ % Test),
     scalaVersion := "2.13.4",
+    scalaJSLinkerConfig in ThisBuild ~= { _.withESFeatures(_.withUseECMAScript2015(false)) },
     webpackConfigFile := Some(baseDirectory.value / "webpack-config.js"),
     webpackResources := webpackResources.value +++ PathFinder(baseDirectory.value / "serverless.yml"),
-    scalaJSModuleKind := ModuleKind.CommonJSModule,
-    scalacOptions += "-P:scalajs:sjsDefinedByDefault",
     scalacOptions --= Seq(
       "-Wdead-code",
       "-Wunused:explicits",

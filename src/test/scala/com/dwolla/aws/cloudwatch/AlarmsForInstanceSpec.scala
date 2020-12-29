@@ -2,11 +2,12 @@ package com.dwolla.aws.cloudwatch
 
 import aws.cloudwatch.Dimension
 import com.dwolla.aws.cloudwatch.TestHelpers._
-import org.scalatest._
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.flatspec.AnyFlatSpecLike
 
 import scala.scalajs.js.JSConverters._
 
-class AlarmsForInstanceSpec extends FlatSpec with Matchers {
+class AlarmsForInstanceSpec extends AnyFlatSpecLike with Matchers {
 
   val instanceId = TestHelpers.instanceId("i-abcdefg")
 
