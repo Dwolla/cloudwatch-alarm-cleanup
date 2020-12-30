@@ -1,8 +1,9 @@
 package com.dwolla.fs2utils
 
-import org.scalatest._
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.flatspec.AnyFlatSpecLike
 
-class GetFromMapAsStreamSpec extends FlatSpec with Matchers {
+class GetFromMapAsStreamSpec extends AnyFlatSpecLike with Matchers {
 
   behavior of "GetFromMapAsStream"
 
