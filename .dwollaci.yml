@@ -19,5 +19,4 @@ stages:
         . ${NVM_DIR}/nvm.sh --no-use
         nvm install
         set -x
-        npm install -g serverless
         sbt deploy
