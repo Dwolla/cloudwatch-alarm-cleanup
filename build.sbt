@@ -17,6 +17,7 @@ inThisBuild(List(
 
   githubWorkflowJavaVersions := Seq("adopt@1.8", "adopt@1.11"),
   githubWorkflowTargetTags ++= Seq("v*"),
+  githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "package"))),
   githubWorkflowPublishTargetBranches := Nil,
   githubWorkflowPublish := Nil,
 ))
