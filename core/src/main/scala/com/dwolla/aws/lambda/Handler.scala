@@ -7,28 +7,25 @@ import com.dwolla.aws.cloudwatch.AlarmsForInstance.byInstanceId
 import com.dwolla.aws.cloudwatch._
 import com.dwolla.aws.ec2.InstanceId
 import com.dwolla.aws.lambda.ScheduledEventStream._
+import com.dwolla.lambda.IOLambda
 import fs2._
+import jsdep.awsLambda.handlerMod
 
-import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import scala.scalajs.js.{JSON, _}
 
-object Handler {
+object Handler extends IOLambda[ScheduledEvent, Unit] {
   implicit val ioContextShift = IO.contextShift(scala.concurrent.ExecutionContext.global)
 
-  @JSExportTopLevel("removeCloudWatchAlarms")
-  val handler: ScheduledHandler = (event, _, callback: LambdaCallback[Unit]) => {
+  override def handleRequest(event: ScheduledEvent, context: handlerMod.Context): IO[Unit] =
     Stream.emit(event)
       .covary[IO]
       .through(HandleScheduledEvents[IO])
       .compile
       .drain
-      .unsafeRunAsync {
-        case Left(t) => callback(js.Error(t.getMessage), ())
-        case Right(()) => callback(null, ())
-      }
-  }
 
+  @JSExportTopLevel("removeCloudWatchAlarms")
+  val export = handler
 }
 
 object HandleScheduledEvents {
