@@ -33,7 +33,7 @@ object HandleScheduledEvents {
     for {
       ec2Instance <- input.through(scheduledEventToEc2InstanceId)
       implicit0(alg: CloudWatchAlg[F]) <- Stream.resource(CloudWatchAlg.resource[F])
-      deletion <- alarmsForInstanceId(ec2Instance).through(alg.removeAlarms).observe(stdOut("deletion result: "))
+      deletion <- alarmsForInstanceId(ec2Instance).evalTap(alg.clearAlarm).through(alg.removeAlarms).observe(stdOut("deletion result: "))
     } yield deletion
 
   private def scheduledEventToEc2InstanceId[F[_] : Concurrent]: Pipe[F, ScheduledEvent, InstanceId] = input =>

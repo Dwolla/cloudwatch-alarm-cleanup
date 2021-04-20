@@ -20,6 +20,9 @@ object AWS extends js.Object {
     def deleteAlarms(params: DeleteAlarmsInput,
                      callback: Callback[DeleteAlarmsOutput]): Unit = js.native
 
+    def setAlarmState(params: SetAlarmStateInput,
+                      callback: Callback[Unit]): Unit = js.native
+
   }
 
 }

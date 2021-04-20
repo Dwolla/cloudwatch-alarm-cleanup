@@ -11,16 +11,17 @@ import com.dwolla.testutils.StreamSpec
 import fs2._
 import org.scalatest.matchers.should.Matchers
 
+import scala.collection.mutable
 import scala.scalajs.js
 
 class RemoveAlarmsSpec extends StreamSpec with Matchers {
 
-  behavior of "RemoveAlarms"
+  behavior of "ListOfAlarms"
 
-  it should "set up a mock client" inIO {
+  it should "be cleared and removed" inIO {
     val cutoff = 100
 
-    val client: CloudWatch = new FakeCloudWatch
+    val client = new FakeCloudWatch
 
     val input: Stream[IO, MetricAlarm] = Stream.emits(0 until (cutoff + 1)).map { i =>
       val metricAlarm = uninitializedMetricAlarm()
@@ -28,11 +29,14 @@ class RemoveAlarmsSpec extends StreamSpec with Matchers {
       metricAlarm
     }
 
-    val output: IO[List[DeleteAlarmsOutput]] = new CloudWatchAlgImpl[IO](client).removeAlarms(input).compile.toList
-
-    output.map { l =>
+    val alg = new CloudWatchAlgImpl[IO](client)
+    for {
+      l <- input.evalTap(alg.clearAlarm).through(alg.removeAlarms).compile.toList
+      expectedClearedAlarms <- input.map(_.AlarmName).compile.toList
+    } yield {
       alarms(l.headOption) should be((0 until cutoff).map(toAlarmName).toList)
       alarms(l.tail.headOption) should equal((cutoff until (cutoff + 1)).map(toAlarmName).toList)
+      client.clearedAlarms.map(_.AlarmName) should contain theSameElementsAs(expectedClearedAlarms)
     }
   }
 
@@ -53,6 +57,7 @@ object RemoveAlarmsSpec {
 }
 
 class FakeCloudWatch extends CloudWatch {
+  val clearedAlarms: mutable.Buffer[SetAlarmStateInput] = mutable.Buffer.empty
   def metricAlarm(x: AlarmName): MetricAlarm = {
     val metricAlarm = uninitializedMetricAlarm()
     metricAlarm.AlarmName = x
@@ -64,4 +69,9 @@ class FakeCloudWatch extends CloudWatch {
 
   override def deleteAlarms(params: DeleteAlarmsInput, callback: Callback[DeleteAlarmsOutput]): Unit =
     callback(null, js.Dynamic.literal("input" -> params).asInstanceOf[DeleteAlarmsOutput])
+
+  override def setAlarmState(params: SetAlarmStateInput, callback: Callback[Unit]): Unit = {
+    clearedAlarms.append(params)
+    callback(null, ())
+  }
 }
