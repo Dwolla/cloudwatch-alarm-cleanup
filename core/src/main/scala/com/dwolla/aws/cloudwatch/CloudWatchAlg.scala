@@ -15,6 +15,7 @@ trait CloudWatchAlg[F[_]] {
   def listAllCloudWatchAlarms(): Stream[F, MetricAlarm]
   //noinspection MutatorLikeMethodIsParameterless
   def removeAlarms: Pipe[F, MetricAlarm, DeleteAlarmsOutput]
+  def clearAlarm(metricAlarm: MetricAlarm): F[Unit]
 }
 
 object CloudWatchAlg {
@@ -43,6 +44,14 @@ object CloudWatchAlg {
         .map(_.executeVia[F](client.deleteAlarms))
         .map(Stream.eval)
         .parJoin(deleteAlarmsParallelismFactor)
+
+    override def clearAlarm(metricAlarm: MetricAlarm): F[Unit] = {
+      val input = SetAlarmStateInput()
+      input.AlarmName = metricAlarm.AlarmName
+      input.StateValue = "OK"
+      input.StateReason = "Marking OK before deletion"
+      input.executeVia[F](client.setAlarmState)
+    }
   }
 
 }

@@ -21,6 +21,17 @@ object DescribeAlarmsInput {
 }
 
 @js.native
+trait SetAlarmStateInput extends js.Object {
+  var AlarmName: AlarmName = js.native
+  var StateValue: StateValue = js.native
+  var StateReason: StateReason = js.native
+}
+
+object SetAlarmStateInput {
+  def apply(): SetAlarmStateInput = js.Dynamic.literal().asInstanceOf[SetAlarmStateInput]
+}
+
+@js.native
 trait DescribeAlarmsOutput extends js.Object {
   var MetricAlarms: MetricAlarms = js.native
   var NextToken: UndefOr[NextToken] = js.native
