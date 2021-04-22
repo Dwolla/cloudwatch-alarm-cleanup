@@ -109,7 +109,7 @@ deploy := Def.task {
 
   Process(
     s"$nodeModulesBin/$cmd",
-    Option(webpackWorkingFolder),
+    Option((`cloudwatch-alert-cleanup-root` / baseDirectory).value),
     "SERVICE_NAME" -> (`cloudwatch-alarm-cleanup` / normalizedName).value,
     "ARTIFACT_PATH" -> (`cloudwatch-alarm-cleanup` / artifactPath).value.toString,
     "BUNDLE_NAME" -> bundleName,
