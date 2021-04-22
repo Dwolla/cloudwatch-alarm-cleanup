@@ -23,6 +23,7 @@ provider:
       Action:
         - "cloudwatch:DescribeAlarms"
         - "cloudwatch:DeleteAlarms"
+        - "cloudwatch:SetAlarmState"
       Resource:
         - "*"
     - Effect: "Allow" # xray permissions (required)
