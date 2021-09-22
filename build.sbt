@@ -58,7 +58,7 @@ lazy val `cloudwatch-alarm-cleanup` = project.in(file("core"))
       Seq(
         "co.fs2" %%% "fs2-core" % "2.5.4",
         "com.chuusai" %%% "shapeless" % V.shapeless,
-        "com.dwolla" %%% "fs2-aws-lambda-io-app" % "2.0.0-M11",
+        "com.dwolla" %%% "fs2-aws-lambda-io-app" % "2.0.0-M12",
       ) ++
       Seq(
         "org.scalatest" %%% "scalatest" % "3.2.0",
