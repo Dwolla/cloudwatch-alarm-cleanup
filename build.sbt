@@ -23,7 +23,7 @@ inThisBuild(List(
 ))
 
 lazy val V = new {
-  val shapeless = "2.3.3"
+  val shapeless = "2.3.7"
 }
 
 lazy val `aws-types` = project.in(file("aws-types"))
