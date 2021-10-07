@@ -11,7 +11,7 @@ inThisBuild(List(
       url("https://dwolla.com")
     ),
   ),
-  scalaVersion := "2.13.5",
+  scalaVersion := "2.13.6",
   startYear := Option(2018),
   scalaJSLinkerConfig ~= { _.withESFeatures(_.withUseECMAScript2015(false)) },
 
