@@ -56,7 +56,7 @@ lazy val `cloudwatch-alarm-cleanup` = project.in(file("core"))
     addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
     libraryDependencies ++= {
       Seq(
-        "co.fs2" %%% "fs2-core" % "3.1.5",
+        "co.fs2" %%% "fs2-core" % "2.5.10",
         "com.chuusai" %%% "shapeless" % V.shapeless,
         "com.dwolla" %%% "fs2-aws-lambda-io-app" % "2.0.0-M12",
       ) ++
