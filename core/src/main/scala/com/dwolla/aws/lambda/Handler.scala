@@ -15,7 +15,7 @@ import scala.scalajs.js.annotation._
 import scala.scalajs.js.{JSON, _}
 
 object Handler extends IOLambda[ScheduledEvent, Unit] {
-  implicit val ioContextShift = IO.contextShift(scala.concurrent.ExecutionContext.global)
+  implicit val ioContextShift = IO.contextShift(org.scalajs.macrotaskexecutor.MacrotaskExecutor)
 
   override def handleRequest(event: ScheduledEvent, context: handlerMod.Context): IO[Unit] =
     Stream.emit(event)
