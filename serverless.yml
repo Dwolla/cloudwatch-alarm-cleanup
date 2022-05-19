@@ -13,7 +13,7 @@ resources:
 provider:
   name: aws
   stage: production
-  runtime: nodejs12.x
+  runtime: nodejs14.x
   region: us-west-2
   timeout: 30
   memorySize: 1024
