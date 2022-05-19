@@ -13,7 +13,7 @@ inThisBuild(List(
   ),
   scalaVersion := "2.13.8",
   startYear := Option(2018),
-  scalaJSLinkerConfig ~= { _.withESFeatures(_.withUseECMAScript2015(false)) },
+  scalaJSLinkerConfig ~= { _.withESFeatures(_.withESVersion(org.scalajs.linker.interface.ESVersion.ES5_1)) },
 
   githubWorkflowJavaVersions := Seq("adopt@1.8", "adopt@1.11"),
   githubWorkflowTargetTags ++= Seq("v*"),
@@ -59,6 +59,8 @@ lazy val `cloudwatch-alarm-cleanup` = project.in(file("core"))
         "co.fs2" %%% "fs2-core" % "2.5.11",
         "com.chuusai" %%% "shapeless" % V.shapeless,
         "com.dwolla" %%% "fs2-aws-lambda-io-app" % "2.0.0-M16",
+        "org.scala-js" %%% "scala-js-macrotask-executor" % "1.0.0",
+        "org.scala-js" %%% "scalajs-java-securerandom" % "1.0.0",
       ) ++
       Seq(
         "org.scalatest" %%% "scalatest" % "3.2.11",
