@@ -25,7 +25,7 @@ object Handler extends IOLambda[ScheduledEvent, Unit] {
       .drain
 
   @JSExportTopLevel("removeCloudWatchAlarms")
-  val export = handler
+  val `export` = handler
 }
 
 object HandleScheduledEvents {

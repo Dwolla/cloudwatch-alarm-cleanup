@@ -1,26 +1,24 @@
-inThisBuild(List(
-  organization := "com.dwolla",
-  description := "AWS Lambda function that listens for AutoScaling lifecycle events and removes CloudWatch alarms for instances that are terminated",
-  homepage := Option(url("https://github.com/Dwolla/cloudwatch-alert-cleanup")),
-  licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
-  developers := List(
+ThisBuild / organization := "com.dwolla"
+ThisBuild / description := "AWS Lambda function that listens for AutoScaling lifecycle events and removes CloudWatch alarms for instances that are terminated"
+ThisBuild / homepage := Option(url("https://github.com/Dwolla/cloudwatch-alert-cleanup"))
+ThisBuild / licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
+ThisBuild / developers := List(
     Developer(
       "bpholt",
       "Brian Holt",
       "bholt+github@dwolla.com",
       url("https://dwolla.com")
     ),
-  ),
-  scalaVersion := "2.13.8",
-  startYear := Option(2018),
-  scalaJSLinkerConfig ~= { _.withESFeatures(_.withESVersion(org.scalajs.linker.interface.ESVersion.ES5_1)) },
+  )
+ThisBuild / scalaVersion := "2.13.8"
+ThisBuild / startYear := Option(2018)
+ThisBuild / scalaJSLinkerConfig ~= { _.withESFeatures(_.withESVersion(org.scalajs.linker.interface.ESVersion.ES5_1)) }
 
-  githubWorkflowJavaVersions := Seq("adopt@1.8", "adopt@1.11"),
-  githubWorkflowTargetTags ++= Seq("v*"),
-  githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "package"))),
-  githubWorkflowPublishTargetBranches := Nil,
-  githubWorkflowPublish := Nil,
-))
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("8"), JavaSpec.temurin("11"))
+ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
+ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "package")))
+ThisBuild / githubWorkflowPublishTargetBranches := Nil
+ThisBuild / githubWorkflowPublish := Nil
 
 lazy val V = new {
   val shapeless = "2.3.9"
