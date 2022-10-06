@@ -21,7 +21,7 @@ ThisBuild / githubWorkflowPublishTargetBranches := Nil
 ThisBuild / githubWorkflowPublish := Nil
 
 lazy val V = new {
-  val shapeless = "2.3.9"
+  val shapeless = "2.3.10"
 }
 
 lazy val `aws-types` = project.in(file("aws-types"))
