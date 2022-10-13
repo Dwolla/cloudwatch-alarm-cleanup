@@ -10,7 +10,7 @@ ThisBuild / developers := List(
       url("https://dwolla.com")
     ),
   )
-ThisBuild / scalaVersion := "2.13.8"
+ThisBuild / scalaVersion := "2.13.10"
 ThisBuild / startYear := Option(2018)
 ThisBuild / scalaJSLinkerConfig ~= { _.withESFeatures(_.withESVersion(org.scalajs.linker.interface.ESVersion.ES5_1)) }
 
