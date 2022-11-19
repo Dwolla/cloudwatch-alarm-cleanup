@@ -7,7 +7,7 @@ queue_rules:
 pull_request_rules:
   - name: assign and label scala-steward's PRs
     conditions:
-      - author=scala-steward
+      - author=dwolla-oss-scala-steward[bot]
     actions:
       label:
         add: [dependency-update]
@@ -20,7 +20,7 @@ pull_request_rules:
       update:
   - name: merge scala-steward's PRs
     conditions:
-      - author=scala-steward
+      - author=dwolla-oss-scala-steward[bot]
       - status-success=Build and Test (ubuntu-latest, 2.13.6, adopt@1.8)
       - status-success=Build and Test (ubuntu-latest, 2.13.6, adopt@1.11)
     actions:
