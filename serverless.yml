@@ -33,9 +33,6 @@ provider:
       Resource:
         - "*"
 
-plugins:
-  - serverless-plugin-tracing
-
 package:
   artifact: ${env:ARTIFACT_PATH}
 
