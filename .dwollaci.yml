@@ -1,13 +1,8 @@
 stages:
   build:
-    nodeLabel: nvm-sbt
+    nodeLabel: sbt
     steps:
       - |
-        set +x
-        . ${NVM_DIR}/nvm.sh --no-use
-        nvm install
-        set -x
-        npm install
         sbt ++2.13.1 test
     filesToStash:
       - '**'
@@ -17,6 +12,6 @@ stages:
       - |
         set +x
         . ${NVM_DIR}/nvm.sh --no-use
-        nvm install
+        nvm install serverless
         set -x
         sbt deploy
