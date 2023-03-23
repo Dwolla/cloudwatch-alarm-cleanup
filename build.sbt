@@ -62,7 +62,7 @@ lazy val `cloudwatch-alarm-cleanup` = project.in(file("core"))
       ) ++
       Seq(
         "org.scalatest" %%% "scalatest" % "3.2.12",
-        "com.dwolla" %%% "testutils-scalatest-fs2" % "2.0.0-M6",
+        "com.dwolla" %%% "testutils-scalatest-fs2" % "2.0.0-M7",
       ).map(_ % Test)
     },
     (Compile / npmDevDependencies) ++= Seq(
