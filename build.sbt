@@ -61,7 +61,7 @@ lazy val `cloudwatch-alarm-cleanup` = project.in(file("core"))
         "org.scala-js" %%% "scalajs-java-securerandom" % "1.0.0",
       ) ++
       Seq(
-        "org.scalatest" %%% "scalatest" % "3.2.12",
+        "org.scalatest" %%% "scalatest" % "3.2.18",
         "com.dwolla" %%% "testutils-scalatest-fs2" % "2.0.0-M6",
       ).map(_ % Test)
     },
