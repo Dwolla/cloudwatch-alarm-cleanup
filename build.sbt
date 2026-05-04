@@ -1,3 +1,6 @@
+import sbtghactions.UseRef
+import sbtghactions.WorkflowStep
+
 ThisBuild / organization := "com.dwolla"
 ThisBuild / description := "AWS Lambda function that listens for AutoScaling lifecycle events and removes CloudWatch alarms for instances that are terminated"
 ThisBuild / homepage := Option(url("https://github.com/Dwolla/cloudwatch-alert-cleanup"))
@@ -16,6 +19,37 @@ ThisBuild / scalaJSLinkerConfig ~= { _.withESFeatures(_.withESVersion(org.scalaj
 
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("8"), JavaSpec.temurin("11"))
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
+ThisBuild / githubWorkflowEnv ++= Map("NODE_OPTIONS" -> "--openssl-legacy-provider")
+ThisBuild / githubWorkflowGeneratedCacheSteps := {
+  val hashes = (ThisBuild / githubWorkflowDependencyPatterns).value.map { glob =>
+    s"$${{ hashFiles('$glob') }}"
+  }
+  Seq(
+    WorkflowStep.Use(
+      UseRef.Public("actions", "cache", "v4"),
+      params = Map(
+        "path" -> Seq(
+          "~/.sbt",
+          "~/.ivy2/cache",
+          "~/.coursier/cache/v1",
+          "~/.cache/coursier/v1",
+          "~/AppData/Local/Coursier/Cache/v1",
+          "~/Library/Caches/Coursier/v1",
+        ).mkString("\n"),
+        "key" -> s"$${{ runner.os }}-sbt-cache-v4-${hashes.mkString("-")}",
+      ),
+      name = Some("Cache sbt"),
+    ),
+  )
+}
+
+ThisBuild / githubWorkflowBuildPreamble := Seq(
+  WorkflowStep.Use(
+    ref = UseRef.Public("sbt", "setup-sbt", "v1"),
+    params = Map("sbt-runner-version" -> "1.6.2"),
+    name = Some("Setup sbt"),
+  ),
+)
 ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "package")))
 ThisBuild / githubWorkflowPublishTargetBranches := Nil
 ThisBuild / githubWorkflowPublish := Nil
@@ -66,8 +100,7 @@ lazy val `cloudwatch-alarm-cleanup` = project.in(file("core"))
       ).map(_ % Test)
     },
     (Compile / npmDevDependencies) ++= Seq(
-      "serverless" -> "^1.26.1",
-      "serverless-plugin-tracing" -> "^2.0.0",
+      "serverless" -> "^3.40.0",
     ),
     jsDependencies ++= Seq(
       "org.webjars.npm" % "aws-sdk" % "2.1109.0" / "aws-sdk.js" minified "aws-sdk.min.js" commonJSName "AWS",

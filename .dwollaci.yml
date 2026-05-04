@@ -7,8 +7,8 @@ stages:
         . ${NVM_DIR}/nvm.sh --no-use
         nvm install
         set -x
-        npm install
-        sbt ++2.13.1 test
+        export NODE_OPTIONS=--openssl-legacy-provider
+        sbt test
     filesToStash:
       - '**'
   deployProd:
@@ -19,4 +19,5 @@ stages:
         . ${NVM_DIR}/nvm.sh --no-use
         nvm install
         set -x
+        export NODE_OPTIONS=--openssl-legacy-provider
         sbt deploy

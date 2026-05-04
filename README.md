@@ -7,6 +7,8 @@ A [Serverless](https://serverless.com) application for [AWS Lambda](https://aws.
 
 The application is written in [Scala.JS](https://www.scala-js.org) to be deployed to the Lambda Node runtime.
 
+Use Node 18 from `.nvmrc` for local builds. On Node 17 or newer, set `NODE_OPTIONS=--openssl-legacy-provider` before `sbt test` or `sbt package` so webpack can bundle the optimized JS.
+
 ## Deploy
 
 Run `sbt deploy` to build and deploy the application. The ARN of the Lambda function will be exported by CloudFormation as `cloudwatch-alarm-cleanup:production:RemoveCloudWatchAlarmsArn`. The export can be imported by other CloudFormation stacks to attach the Lambda function as a target for lifecycle events. 
