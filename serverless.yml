@@ -1,6 +1,8 @@
 service: ${env:SERVICE_NAME}
 
-frameworkVersion: '3'
+frameworkVersion: '>=3.39.0 <4.0.0'
+# Serverless JSON schema can lag AWS; nodejs22.x is valid in Lambda.
+configValidationMode: warn
 
 resources:
   Description: Lambda to remove CloudWatch Alarms when an EC2 instance is terminated

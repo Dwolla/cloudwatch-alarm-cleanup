@@ -7,7 +7,7 @@ A [Serverless](https://serverless.com) application for [AWS Lambda](https://aws.
 
 The application is written in [Scala.JS](https://www.scala-js.org) to be deployed to the Lambda Node runtime.
 
-Use Node 18 from `.nvmrc` for local builds. On Node 17 or newer, set `NODE_OPTIONS=--openssl-legacy-provider` before `sbt test` or `sbt package` so webpack can bundle the optimized JS.
+Use Node 22 from `.nvmrc` (`lts/jod`) for local builds and Jenkins. Set `NODE_OPTIONS=--openssl-legacy-provider` before `sbt test`, `sbt package`, or `sbt deploy` so webpack 4 can bundle the optimized JS on Node 17+.
 
 ## Deploy
 
