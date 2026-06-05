@@ -66,8 +66,7 @@ lazy val `cloudwatch-alarm-cleanup` = project.in(file("core"))
       ).map(_ % Test)
     },
     (Compile / npmDevDependencies) ++= Seq(
-      "serverless" -> "^1.26.1",
-      "serverless-plugin-tracing" -> "^2.0.0",
+      "serverless" -> "^3.22.0",
     ),
     jsDependencies ++= Seq(
       "org.webjars.npm" % "aws-sdk" % "2.1109.0" / "aws-sdk.js" minified "aws-sdk.min.js" commonJSName "AWS",
