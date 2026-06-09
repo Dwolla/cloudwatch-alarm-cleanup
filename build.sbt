@@ -1,5 +1,3 @@
-import sbtghactions.WorkflowStep
-
 ThisBuild / organization := "com.dwolla"
 ThisBuild / description := "AWS Lambda function that listens for AutoScaling lifecycle events and removes CloudWatch alarms for instances that are terminated"
 ThisBuild / homepage := Option(url("https://github.com/Dwolla/cloudwatch-alert-cleanup"))
