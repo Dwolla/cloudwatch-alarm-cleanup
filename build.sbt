@@ -1,4 +1,3 @@
-import sbtghactions.UseRef
 import sbtghactions.WorkflowStep
 
 ThisBuild / organization := "com.dwolla"
@@ -20,36 +19,6 @@ ThisBuild / scalaJSLinkerConfig ~= { _.withESFeatures(_.withESVersion(org.scalaj
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("8"), JavaSpec.temurin("11"))
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowEnv ++= Map("NODE_OPTIONS" -> "--openssl-legacy-provider")
-ThisBuild / githubWorkflowGeneratedCacheSteps := {
-  val hashes = (ThisBuild / githubWorkflowDependencyPatterns).value.map { glob =>
-    s"$${{ hashFiles('$glob') }}"
-  }
-  Seq(
-    WorkflowStep.Use(
-      UseRef.Public("actions", "cache", "v4"),
-      params = Map(
-        "path" -> Seq(
-          "~/.sbt",
-          "~/.ivy2/cache",
-          "~/.coursier/cache/v1",
-          "~/.cache/coursier/v1",
-          "~/AppData/Local/Coursier/Cache/v1",
-          "~/Library/Caches/Coursier/v1",
-        ).mkString("\n"),
-        "key" -> s"$${{ runner.os }}-sbt-cache-v4-${hashes.mkString("-")}",
-      ),
-      name = Some("Cache sbt"),
-    ),
-  )
-}
-
-ThisBuild / githubWorkflowBuildPreamble := Seq(
-  WorkflowStep.Use(
-    ref = UseRef.Public("sbt", "setup-sbt", "v1"),
-    params = Map("sbt-runner-version" -> "1.6.2"),
-    name = Some("Setup sbt"),
-  ),
-)
 ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "package")))
 ThisBuild / githubWorkflowPublishTargetBranches := Nil
 ThisBuild / githubWorkflowPublish := Nil
