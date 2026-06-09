@@ -1,5 +1,9 @@
 service: ${env:SERVICE_NAME}
 
+frameworkVersion: '>=3.39.0 <4.0.0'
+# Serverless JSON schema can lag AWS; nodejs22.x is valid in Lambda.
+configValidationMode: warn
+
 resources:
   Description: Lambda to remove CloudWatch Alarms when an EC2 instance is terminated
   Outputs:
@@ -13,11 +17,12 @@ resources:
 provider:
   name: aws
   stage: production
-  runtime: nodejs14.x
+  runtime: nodejs22.x
   region: us-west-2
   timeout: 30
   memorySize: 1024
-  tracing: true
+  tracing:
+    lambda: true
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -26,15 +31,12 @@ provider:
         - "cloudwatch:SetAlarmState"
       Resource:
         - "*"
-    - Effect: "Allow" # xray permissions (required)
+    - Effect: "Allow"
       Action:
         - "xray:PutTraceSegments"
         - "xray:PutTelemetryRecords"
       Resource:
         - "*"
-
-plugins:
-  - serverless-plugin-tracing
 
 package:
   artifact: ${env:ARTIFACT_PATH}
@@ -43,9 +45,9 @@ functions:
   RemoveCloudWatchAlarms:
     handler: ${env:BUNDLE_NAME}.removeCloudWatchAlarms
     events:
-      - cloudwatchEvent:
-          event:
+      - eventBridge:
+          pattern:
             source:
-              - "aws.autoscaling"
+              - aws.autoscaling
             detail-type:
-              - "EC2 Instance Terminate Successful"
+              - EC2 Instance Terminate Successful

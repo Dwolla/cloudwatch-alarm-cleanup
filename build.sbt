@@ -16,6 +16,7 @@ ThisBuild / scalaJSLinkerConfig ~= { _.withESFeatures(_.withESVersion(org.scalaj
 
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("8"), JavaSpec.temurin("11"))
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
+ThisBuild / githubWorkflowEnv ++= Map("NODE_OPTIONS" -> "--openssl-legacy-provider")
 ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "package")))
 ThisBuild / githubWorkflowPublishTargetBranches := Nil
 ThisBuild / githubWorkflowPublish := Nil
@@ -66,8 +67,7 @@ lazy val `cloudwatch-alarm-cleanup` = project.in(file("core"))
       ).map(_ % Test)
     },
     (Compile / npmDevDependencies) ++= Seq(
-      "serverless" -> "^1.26.1",
-      "serverless-plugin-tracing" -> "^2.0.0",
+      "serverless" -> "~3.40.0",
     ),
     jsDependencies ++= Seq(
       "org.webjars.npm" % "aws-sdk" % "2.1109.0" / "aws-sdk.js" minified "aws-sdk.min.js" commonJSName "AWS",
