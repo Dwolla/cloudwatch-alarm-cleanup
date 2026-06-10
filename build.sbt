@@ -70,7 +70,7 @@ lazy val `cloudwatch-alarm-cleanup` = project.in(file("core"))
       "serverless" -> "~3.40.0",
     ),
     jsDependencies ++= Seq(
-      "org.webjars.npm" % "aws-sdk" % "2.1109.0" / "aws-sdk.js" minified "aws-sdk.min.js" commonJSName "AWS",
+      "org.webjars.npm" % "aws-sdk" % "2.1692.0" / "aws-sdk.js" minified "aws-sdk.min.js" commonJSName "AWS",
     ).map(_ % Test),
     webpackConfigFile := Some(baseDirectory.value / "webpack-config.js"),
     webpackResources := webpackResources.value +++ PathFinder(baseDirectory.value / "serverless.yml"),
